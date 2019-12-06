@@ -30,11 +30,7 @@ public:
      */
     void AddTask(const Task& task);
 
-    size_t JobsRemaining();
-
-    void Run();
-
-    Task NextJob();
+    
     /**
      *  @brief: Join with all threads. Block until all threads have completed.
      *  @Params: wait_for_all: If true, will wait for the queue to empty
@@ -54,7 +50,13 @@ public:
      */
     void WaitAll();
 
+    size_t JobsRemaining();
+
     size_t num_workers() const;
+protected:
+    void Run();
+
+    Task NextJob();
 private:
     std::atomic_int jobs_left_;
     std::atomic_bool bailout_;

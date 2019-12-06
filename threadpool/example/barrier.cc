@@ -3,6 +3,7 @@
 #include <chrono>
 #include <thread>
 #include <vector>
+#include <functional>
 int num_workers = 10;
 Semaphore sema(0);
 int worker_count = 0;
