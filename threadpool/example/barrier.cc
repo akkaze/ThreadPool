@@ -1,32 +1,29 @@
-#include "semaphore.h"
-#include <iostream>
+#include "barrier.h"
 #include <chrono>
-#include <thread>
-#include <vector>
-#include <functional>
-int num_workers = 10;
-Semaphore sema(0);
-int worker_count = 0;
-void func(int id) {
-    worker_count += 1;
-    if (worker_count < num_workers) {
-        std::this_thread::sleep_for(std::chrono::seconds(3));
-        sema.Wait();
-    }
-    std::cout << id << '\n';
-    if (worker_count > 0) {
-        sema.Signal();
-    }
-}
-
-
+#include <iostream>
 int main() {
-    std::vector<std::thread> ths;
-    for (int i = 0; i < num_workers; i++) {
-        ths.emplace_back(std::thread(std::bind(func, i)));
-    }
-    for (auto& th : ths) {
-        th.join();
-    }
-    return 0;
+  int thread_waiting = 3;
+  ThreadBarrier barrier(thread_waiting);
+
+  auto foo = [&barrier]() {
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    barrier.Wait();
+    std::cout << "foo" << std::endl;
+  };
+
+  auto goo = [&barrier]() {
+    barrier.Wait();
+    std::cout << "goo" << std::endl;
+  };
+  auto hoo = [&barrier]() {
+    barrier.Wait();
+    std::cout << "hoo" << std::endl;
+  };
+
+  std::thread t1(foo);
+  std::thread t2(goo);
+  std::thread t3(hoo);
+  t1.join();
+  t2.join();
+  t3.join();
 }
